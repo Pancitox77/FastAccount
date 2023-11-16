@@ -21,10 +21,6 @@ public class FileHandler {
     private File accountFile;
     private List<Account> accounts;
 
-    public static void main(String[] args) {
-        new FileHandler();
-    }
-
     public FileHandler() {
         // Buscar el archivo data/accounts.data y crearlo si no existe
         try {
