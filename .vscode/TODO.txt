@@ -1,0 +1,2 @@
+Que una cuenta pueda guardar varias etiquetas (dentro de una lista) y en CLI.
+Que todas las opciones se creen a partir de objetos Option en lugar de usar directamente addOption.
