@@ -1,7 +1,7 @@
 # FastAccount
 
 CLI para la creación rápida de cuentas.
-No crea la cuenta en sí, sino que guarda el nombre, email vinculado, contraseña y etiquetas.
+No crea la cuenta en sí, sino que guarda el nombre, email vinculado, usuario, contraseña y etiquetas.
 
 ## Atención
 
@@ -14,6 +14,6 @@ Dentro del repositorio se incluye un archivo *FastAccount.jar*. Este archivo es 
 
 Para usar el CLI directamente:
 
-    ```console
-        java -jar FastAccount.jar <parámetros>
-    ```
+```console
+    java -jar FastAccount.jar <parámetros>
+```
