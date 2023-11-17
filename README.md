@@ -10,10 +10,10 @@ La contraseña no está cifrada y los datos de las cuentas se guardan en un .txt
 
 ## Instalación
 
-Dentro del repositorio se incluye un archivo *fast-account.jar*. Este archivo es una versión compilada y ya lista para usar.
+Dentro del repositorio se incluye un archivo *FastAccount.jar*. Este archivo es una versión compilada y ya lista para usar.
 
 Para usar el CLI directamente:
 
     ```console
-        java -jar fast-account.jar
+        java -jar FastAccount.jar <parámetros>
     ```

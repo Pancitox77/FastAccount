@@ -1,2 +1,5 @@
-Que una cuenta pueda guardar varias etiquetas (dentro de una lista) y en CLI.
-Que todas las opciones se creen a partir de objetos Option en lugar de usar directamente addOption.
+Permitir que, opcionalmente, se pueda ingresar un nombre de usuario.
+Cambiar el formato de creación a:
+    ... --create nombre -password pass -email mail -user usuario -tags t1 t2 ...
+    Siendo el nombre obligatorio, el usuario,mail y contraseña opcionales, y múltiples etiquetas (opcionales)
+    Se puede resumir en: -c nombre -p pass -m mail -u user -t t1 t2...

@@ -1,4 +1,4 @@
-package util;
+package handler;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,6 +8,9 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import util.Account;
+import util.Formatter;
 
 public class FileHandler {
     /**
@@ -52,7 +55,7 @@ public class FileHandler {
     public void save(List<Account> accountList) {
         try (FileWriter writer = new FileWriter(accountFile)) {
             for (Account account : accountList) {
-                String accountString = account.toString();
+                String accountString = Formatter.toString(account);
                 writer.append(accountString + "\n");
             }
         } catch (IOException e) {
@@ -65,7 +68,7 @@ public class FileHandler {
 
         try (Scanner scanner = new Scanner(accountFile)) {
             while (scanner.hasNextLine()) {
-                Account account = Account.fromString(scanner.nextLine());
+                Account account = Formatter.fromString(scanner.nextLine());
                 accountList.add(account);
             }
 

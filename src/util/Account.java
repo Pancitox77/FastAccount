@@ -1,68 +1,71 @@
 package util;
 
+import java.util.Collections;
+import java.util.List;
+
 public class Account {
     private String name;
     private String email;
+    private String username;
     private String password;
-    private String tag;
+    private List<String> tags;
 
-    public Account(String name, String email, String password) {
+    /* Constructores */
+    public Account() {
+        this("", "", "", "", Collections.emptyList());
+    }
+
+    public Account(String name, String email, String user, String password, List<String> tags) {
         this.name = formatName(name);
         this.email = email;
+        this.username = user;
         this.password = password;
+        this.tags = tags;
     }
 
-    public Account(String name, String email, String password, String tag) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.tag = (tag.equals("<null>") ? null : tag);
-    }
-
-    public Account() {
-    }
-
+    /* Getters */
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = formatName(name);
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {
         return password;
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
+
+    /* Setters */
+    public void setName(String name) {
+        this.name = formatName(name);
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setUsername(String user) {
+        this.username = user;
+    }
+
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public String formated(boolean verbose) {
-        if (verbose)
-            return name + ":\n   Email: " + email + "\n   Contraseña: " + password
-                    + (hasTag() ? "\n   Tag: <" + tag + ">" : "");
-        else
-            return name + ": " + email + " | " + password + (hasTag() ? " | <" + tag + ">" : "");
+    public void setTags(List<String> tags) {
+        this.tags = tags;
     }
 
-    @Override
-    public String toString() {
-        return name + " " + email + " " + password + " " + tag;
-    }
-
-    public static Account fromString(String str) {
-        String[] parts = str.split(" ");
-        return new Account(parts[0], parts[1], parts[2], parts[3]);
-    }
+    /* Util */
 
     private String formatName(String str) {
         if (str.length() == 0)
@@ -74,15 +77,9 @@ public class Account {
         return firtsPart.toUpperCase() + secondPart;
     }
 
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
-    }
-
-    private boolean hasTag(){
-        return (this.tag != null) && (!this.tag.equals("null"));
+    @Override
+    public String toString() {
+        return "Account(name=" + name + ", email=" + email + ", user=" + username + ", password=" + password + ", tags="
+                + tags + ")";
     }
 }
