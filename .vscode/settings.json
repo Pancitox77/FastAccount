@@ -4,5 +4,13 @@
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
         "/home/pancitox/Descargas/commons-cli-1.6.0/commons-cli-1.6.0.jar"
-    ]
+    ],
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true
+    }
 }

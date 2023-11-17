@@ -149,7 +149,7 @@ public class FlagsHandler {
             // Información
             onHasOption(LIST, n -> System.out.println(accountHandler.listAllAccounts()));
             onHasOption(HELP, n -> new HelpFormatter().printHelp("FastAccount", options));
-            onHasOption(VERSION, n -> System.out.println("Versión 1.1"));
+            onHasOption(VERSION, n -> System.out.println("Versión 1.1.2"));
 
             // Creación
             onHasOption(CREATE, n -> {

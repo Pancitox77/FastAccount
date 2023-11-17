@@ -59,6 +59,7 @@ public class FileHandler {
                 writer.append(accountString + "\n");
             }
         } catch (IOException e) {
+            System.out.println("Error al guardar");
             e.printStackTrace();
         }
     }

@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class FileTest {
     public static void main(String[] args) {
         try {
-            File file = new File(FileTest.class.getResource("/main/").toURI().getPath(), "load.txt");
+            File file = new File(FileTest.class.getResource("/main/test/").toURI().getPath(), "load.txt");
             boolean error = false;
 
             // comprobar línea por línea
