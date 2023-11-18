@@ -95,7 +95,7 @@ public class AccountHandler {
             return EMPTY_LIST_MESSAGE;
 
         List<Account> accountsFound = accounts.stream()
-                .filter(a -> a.getEmail().toLowerCase().contains(email.toLowerCase()))
+                .filter(a -> a.getEmail() != null && a.getEmail().toLowerCase().contains(email.toLowerCase()))
                 .collect(Collectors.toList());
 
         boolean results = showResultsFinded("el email "+email, accountsFound.size());

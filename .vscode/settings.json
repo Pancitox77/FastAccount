@@ -3,7 +3,7 @@
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
         "lib/**/*.jar",
-        "/home/pancitox/Descargas/commons-cli-1.6.0/commons-cli-1.6.0.jar"
+        "/home/pancitox/Scripts/Librerias/commons-cli-1.6.0/commons-cli-1.6.0.jar"
     ],
     "files.exclude": {
         "**/.git": true,
