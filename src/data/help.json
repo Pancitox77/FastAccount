@@ -1,0 +1,66 @@
+[
+    {
+        "modo": "add",
+        "opciones": [
+            [ "auto <nombre> <email> <contraseña>", "Creación rápida" ],
+            [ "-n, --name <nombre>", "Nombre de la cuenta" ],
+            [ "-e, --email <email>", "Email asociado" ],
+            [ "-p, --password <contraseña>", "Contraseña" ],
+            [ "-u, --user <usuario>", "Usuario (Google, Microsoft, etc)" ],
+            [ "-t, --tags <etiquetas...>", "Etiqueta/s" ]
+        ]
+    },
+    {
+        "modo": "remove",
+        "opciones": [
+            [ "<nombre>", "Eliminar un elemento específico" ],
+            [ "-a, --all", "Borrar todos los elementos" ],
+            [ "-e, --email <email>", "Borrar todas las cuentas con este email" ],
+            [ "-t, --tags <etiquetas...>", "Borrar todas las cuentas con estas etiquetas" ],
+            [ "-f, --force", "Forzar eliminación sin confirmación previa" ]
+        ]
+    },
+    {
+        "modo": "search",
+        "opciones": [
+            [ "<palabra clave>", "Buscar nombres que contengan la palabra clave" ],
+            [ "<nombre> -s, --strict", "El nombre debe ser igual (no es case-sensitive)"],
+            [ "<nombre> -ins, --case-insensitive", "No distingue mayúsculas y minúsculas"],
+            [ "-e, --email <email>", "Buscar por email" ],
+            [ "-u, --user <usuario>", "Buscar por usuario" ],
+            [ "-t, --tags <etiquetas...>", "Buscar por una o varias etiquetas" ]
+        ]
+    },
+    {
+        "modo": "edit",
+        "opciones": [
+            [ "<cuenta> -i, --interactive", "Edición interactiva"],
+            [ "<cuenta> -n, --name <nombre>", "Nuevo nombre para la cuenta" ],
+            [ "<cuenta> -e, --email <email>", "Nuevo email para la cuenta" ],
+            [ "<cuenta> -p, --password <contraseña>", "Nueva contraseña para la cuenta" ],
+            [ "<cuenta> -u, --user <usuario>", "Nuevo usuario para la cuenta" ],
+            [ "<cuenta> -t, --tags <etiquetas...>", "Añadir o eliminar etiquetas a la cuenta" ],
+            [ "<cuenta> [opciones] -f, --force", "Forzar edición sin confirmación previa"],
+            [ "<nombre> [opciones] -s, --strict", "El nombre debe ser igual (no es case-sensitive)"],
+            [ "<nombre> [opciones] -ins, --case-insensitive", "No distingue mayúsculas y minúsculas"]
+        ]
+    },
+    {
+        "modo": "list",
+        "opciones": [
+            [ "", "Mostrar lista completa de cuentas" ],
+            [ "--export-json", "Exportar a formato json" ],
+            [ "--reverse", "Invertir orden" ],
+            [ "--limit <numero>", "Limite de resultados" ],
+            [ "--offset <numero>", "Desplazamiento del resultado" ],
+            [ "-n, --numerate", "Numera los elementos"]
+        ]
+    },
+    {
+        "modo": "help",
+        "opciones": [
+            [ "", "Obtener ayuda general" ],
+            [ "<comando>", "Obtener ayuda para un comando" ]
+        ]
+    }
+]

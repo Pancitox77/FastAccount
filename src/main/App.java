@@ -1,9 +1,9 @@
 package main;
 
-import handler.FlagsHandler;
+import handler.CLI;
 
 public class App {
     public static void main(String[] args) {
-        new FlagsHandler(args);
+        new CLI(args);
     }
 }

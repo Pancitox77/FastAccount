@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import util.Account;
 import util.Formatter;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class AccountHandler {
@@ -24,19 +25,34 @@ public class AccountHandler {
 
     /* Opciones de información */
 
-    public String listAllAccounts() {
-        if (accounts.isEmpty())
-            return EMPTY_LIST_MESSAGE;
+    public String listAllAccounts(int offset, int limit, boolean revert, boolean numerate) {
+        if (accounts.isEmpty()) return EMPTY_LIST_MESSAGE;
+        if(limit == -1) limit = accounts.size();
 
+        // Control de errores
+        if(offset < 0) return "La opción '--offset' debe ser igual o mayor a 1.";
+        if(limit < offset) return "El límite debe ser mayor al offset.";
+
+        // Leer cuentas
         StringBuilder builder = new StringBuilder();
-        builder.append("Se han cargado " + accounts.size() + " cuentas\n");
         Account lastAccount = this.accounts.get(accounts.size() - 1);
+        String results = "Se han cargado " + (limit-offset+1) + " cuentas (desde ";
 
-        for (Account account : this.accounts) {
-            builder.append(Formatter.format(account, descriptiveMode));
-            if (account != lastAccount)
-                builder.append("\n");
+        // Revertir lista (si es necesario)
+        if(revert){
+            results +=  limit + " hasta " + offset + ")\n\n";
+
+            for(int i=limit-1; i>=offset-1; i--){
+                appendAccount(i, builder, lastAccount, numerate);
+            }
+
+        } else {
+            results +=  offset + " hasta " + limit + ")\n\n";
+            for(int i=offset-1; i<limit; i++){
+                appendAccount(i, builder, lastAccount, numerate);
+            }
         }
+        builder.insert(0, results);
         return builder.toString();
     }
 
@@ -49,7 +65,7 @@ public class AccountHandler {
         fileHandler.save(accounts);
     }
 
-    public void deleteAccountByName(String name) {
+    public void removeAccountByName(String name) {
         List<Account> toRemove = accounts.stream()
                 .filter(a -> a.getName().equalsIgnoreCase(name))
                 .collect(Collectors.toList());
@@ -58,15 +74,46 @@ public class AccountHandler {
             System.out.println(NO_RESULTS_FINDED_MESSAGE);
 
         else {
-            for (Account account : toRemove) {
+            accounts.remove(toRemove.get(0));
+            onVerbose(name + " eliminado");
+            fileHandler.save(accounts);
+        }
+    }
+
+    public void removeAccountsByEmail(String email){
+        List<Account> toRemove = accounts.stream()
+            .filter(a -> a.getEmail().equalsIgnoreCase(email))
+            .collect(Collectors.toList());
+
+        if (toRemove.isEmpty())
+            System.out.println(NO_RESULTS_FINDED_MESSAGE);
+
+        else{
+            for (Account account: toRemove){
                 accounts.remove(account);
-                onVerbose(name + " eliminado");
+                onVerbose(email+" eliminada");
             }
             fileHandler.save(accounts);
         }
     }
 
-    public void clearAllData() {
+    public void removeAccountsByTag(String tag){
+        List<Account> toRemove = accounts.stream()
+            .filter(a -> a.hasTag(tag))
+            .collect(Collectors.toList());
+
+        if (toRemove.isEmpty())
+            System.out.println(NO_RESULTS_FINDED_MESSAGE);
+
+        else{
+            for (Account account : toRemove){
+                accounts.remove(account);
+                onVerbose(tag+" eliminada");
+            }
+        }
+    }
+
+    public void removeAllAccounts() {
         onVerbose("Se han eliminado " + accounts.size() + " cuentas.");
         this.accounts.clear();
         fileHandler.save(accounts);
@@ -74,78 +121,89 @@ public class AccountHandler {
 
     /* Opciones de búsqueda y filtrado */
 
-    public String filterAccountsByName(String name) {
+    public List<Account> searchAccountsByName(String name, boolean strict, boolean caseSensitive) {
         if (accounts.isEmpty())
-            return EMPTY_LIST_MESSAGE;
+            return new ArrayList<>(0);
 
-        List<Account> matchingAccounts = accounts.stream()
+        if(strict)
+            return accounts.stream()
+                .filter(acc -> acc.getName().equalsIgnoreCase(name))
+                .collect(Collectors.toList());
+        
+        if(caseSensitive)
+            return accounts.stream()
+                .filter(acc -> acc.getName().equals(name))
+                .collect(Collectors.toList());
+
+        return accounts.stream()
                 .filter(a -> a.getName().toLowerCase().contains(name.toLowerCase()))
                 .collect(Collectors.toList());
-
-        if (matchingAccounts.isEmpty())
-            return NO_RESULTS_FINDED_MESSAGE;
-
-        return matchingAccounts.stream()
-                .map(a -> Formatter.format(a, descriptiveMode))
-                .collect(Collectors.joining("\n"));
     }
 
-    public String filterAccountsByEmail(String email) {
+
+    public List<Account> searchAccountsByEmail(String email) {
         if (accounts.isEmpty())
-            return EMPTY_LIST_MESSAGE;
+            return new ArrayList<>(0);
 
-        List<Account> accountsFound = accounts.stream()
-                .filter(a -> a.getEmail() != null && a.getEmail().toLowerCase().contains(email.toLowerCase()))
+        return accounts.stream()
+                .filter(acc -> acc.getEmail() != null && acc.getEmail().contains(email))
                 .collect(Collectors.toList());
-
-        boolean results = showResultsFinded("el email "+email, accountsFound.size());
-        if (!results)
-            return NO_RESULTS_FINDED_MESSAGE;
-
-        return accountsFound.stream()
-                .map(acc -> Formatter.format(acc, descriptiveMode))
-                .collect(Collectors.joining("\n"));
     }
 
-    public String filterAccountsByUser(String user) {
+
+    public List<Account> searchAccountsByUser(String user) {
         if (accounts.isEmpty())
-            return EMPTY_LIST_MESSAGE;
+            return new ArrayList<>(0);
 
-        List<Account> accountsFound = accounts.stream()
-                .filter(a -> a.getUsername().equalsIgnoreCase(user))
+        return accounts.stream()
+                .filter(a -> a.getUser() != null && a.getUser().equalsIgnoreCase(user))
                 .collect(Collectors.toList());
-
-        boolean results = showResultsFinded("el usuario " + user, accountsFound.size());
-        if (!results)
-            return NO_RESULTS_FINDED_MESSAGE;
-
-        return accountsFound.stream()
-                .map(acc -> Formatter.format(acc, descriptiveMode))
-                .collect(Collectors.joining("\n"));
     }
 
-    public String filterAccountsByTag(String tag) {
+
+    public List<Account> searchAccountsByTag(String tag) {
         if (accounts.isEmpty())
-            return EMPTY_LIST_MESSAGE;
+            return new ArrayList<>(0);
 
-        List<Account> accountsFound = accounts.stream()
-                .filter(ac -> {
-                    List<String> tags = ac.getTags();
-                    for (String t : tags) {
-                        if (t.equalsIgnoreCase(tag.toLowerCase()))
-                            return true;
-                    }
-                    return false;
-                })
-                .collect(Collectors.toList());
+        return accounts.stream()
+            .filter(acc -> acc.hasTag(tag))
+            .collect(Collectors.toList());
+    }
 
-        boolean results = showResultsFinded("la etiqueta " + tag, accountsFound.size());
-        if (!results)
-            return NO_RESULTS_FINDED_MESSAGE;
+    /* Opciones de edición */
 
-        return accountsFound.stream()
-                .map(acc -> Formatter.format(acc, descriptiveMode))
-                .collect(Collectors.joining("\n"));
+    public void updateAccount(Account updatedAccount){
+        int index = -1;
+        for (int i=0;i < accounts.size();i++){
+            if (accounts.get(i).getName().equalsIgnoreCase(updatedAccount.getName())){
+                index = i;
+                break;
+            }
+        }
+
+        if (index != -1){
+            accounts.remove(index);
+            accounts.add(index, updatedAccount);
+            fileHandler.save(accounts);
+        } else
+            System.out.println("No se ha encontrado la cuenta con el nombre: " + updatedAccount.getName());
+    }
+
+    public void updateAccount(String oldName, Account updatedAccount){
+        int index = -1;
+        for (int i=0;i < accounts.size();i++){
+            if (accounts.get(i).getName().equalsIgnoreCase(oldName)){
+                index = i;
+                break;
+            }
+        }
+
+        if (index != -1){
+            accounts.remove(index);
+            accounts.add(index, updatedAccount);
+            fileHandler.save(accounts);
+        } else
+            System.out.println("No se ha encontrado la cuenta con el nombre: " + oldName);
     }
 
     /* Util */
@@ -155,19 +213,25 @@ public class AccountHandler {
             System.out.println(message);
     }
 
-    private boolean showResultsFinded(String resultName, int results) {
-        if (results == 0)
-            return false;
-        else if (results == 1)
-            System.out.println("Se ha encontrado 1 cuenta con " + resultName + ":\n");
-        else
-            System.out.println("Se han encontrado " + results + " cuentas con " + resultName + ":\n");
-        return true;
+    private void appendAccount(int i, StringBuilder builder, Account lastAccount, boolean numerate){
+        Account account = this.accounts.get(i);
+        if(numerate) builder.append(i + 1 + ". ");
+        builder.append(Formatter.format(account, descriptiveMode));
+        if (account != lastAccount)
+            builder.append("\n");
     }
 
     /* Getters/Setters */
 
     public void setDescriptiveMode(boolean verbose) {
         this.descriptiveMode = verbose;
+    }
+
+    public List<Account> getAccounts() {
+        return accounts;
+    }
+
+    public FileHandler getFileHandler() {
+        return fileHandler;
     }
 }

@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.json.simple.JSONArray;
+
 import util.Account;
 import util.Formatter;
 
@@ -37,10 +39,8 @@ public class FileHandler {
             accounts = new ArrayList<>();
             save(accounts);
 
-        } else {
+        } else
             accounts = readFile();
-        }
-
     }
 
     private void createDefaultFile() {
@@ -54,10 +54,9 @@ public class FileHandler {
 
     public void save(List<Account> accountList) {
         try (FileWriter writer = new FileWriter(accountFile)) {
-            for (Account account : accountList) {
-                String accountString = Formatter.toString(account);
-                writer.append(accountString + "\n");
-            }
+            for (Account account : accountList)
+                writer.append(Formatter.toString(account) + "\n");
+
         } catch (IOException e) {
             System.out.println("Error al guardar");
             e.printStackTrace();
@@ -68,15 +67,28 @@ public class FileHandler {
         List<Account> accountList = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(accountFile)) {
-            while (scanner.hasNextLine()) {
-                Account account = Formatter.fromString(scanner.nextLine());
-                accountList.add(account);
-            }
+            while (scanner.hasNextLine())
+                accountList.add(Formatter.fromString(scanner.nextLine()));
 
         } catch (FileNotFoundException e) {
             System.err.print("No existe el archivo");
         }
         return accountList;
+    }
+
+    public void exportJson(JSONArray array){
+        try {
+            File file = new File(getClass().getResource("/").toURI().getPath(), "cuentas.json");
+            FileWriter writer = new FileWriter(file);
+
+            System.out.println(file.getAbsolutePath());
+            boolean created = file.createNewFile();
+            System.out.println((created ? "Archivo json creado" : ""));
+
+            writer.write(array.toJSONString());
+            writer.close();
+        } catch (URISyntaxException|IOException e) { e.printStackTrace(); }
+
     }
 
     public List<Account> getAccounts() {

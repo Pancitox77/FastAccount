@@ -6,7 +6,7 @@ import java.util.List;
 public class Account {
     private String name;
     private String email;
-    private String username;
+    private String user;
     private String password;
     private List<String> tags;
 
@@ -18,7 +18,7 @@ public class Account {
     public Account(String name, String email, String user, String password, List<String> tags) {
         this.name = formatName(name);
         this.email = email;
-        this.username = user;
+        this.user = user;
         this.password = password;
         this.tags = tags;
     }
@@ -32,8 +32,8 @@ public class Account {
         return email;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUser() {
+        return user;
     }
 
     public String getPassword() {
@@ -53,8 +53,8 @@ public class Account {
         this.email = email;
     }
 
-    public void setUsername(String user) {
-        this.username = user;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     public void setPassword(String password) {
@@ -79,7 +79,14 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account(name=" + name + ", email=" + email + ", user=" + username + ", password=" + password + ", tags="
+        return "Account(name=" + name + ", email=" + email + ", user=" + user + ", password=" + password + ", tags="
                 + tags + ")";
+    }
+
+    public boolean hasTag(String tag) {
+        for(String t: tags)
+            if(t.equalsIgnoreCase(tag))
+                return true;
+        return false;
     }
 }

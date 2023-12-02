@@ -19,7 +19,7 @@ public class Formatter {
         StringBuilder builder = new StringBuilder();
         builder.append(account.getName() + "|");
         builder.append(account.getEmail() + "|");
-        builder.append(account.getUsername() + "|");
+        builder.append(account.getUser() + "|");
         builder.append(account.getPassword() + "|");
         builder.append(tagStr);
 
@@ -32,7 +32,7 @@ public class Formatter {
         Account account = new Account();
         account.setName(parts[0]);
         account.setEmail(onNullGetNull(parts[1]));
-        account.setUsername(onNullGetNull(parts[2]));
+        account.setUser(onNullGetNull(parts[2]));
         account.setPassword(onNullGetNull(parts[3]));
 
         List<String> tagsList;
@@ -45,7 +45,7 @@ public class Formatter {
         return account;
     }
 
-    public static String format(Account account, boolean verbose) {
+    public static String format(Account account, boolean descriptive) {
         // Etiquetas
         StringBuilder tagBuilder = new StringBuilder();
         List<String> tags = account.getTags();
@@ -61,16 +61,16 @@ public class Formatter {
         // General
         StringBuilder builder = new StringBuilder();
 
-        if (verbose) {
+        if (descriptive) {
             builder.append(account.getName() + ":" + onNullSkip(" ", account.getEmail(), ""));
-            builder.append(onNullSkip("\n   usuario: ", account.getUsername(), ""));
+            builder.append(onNullSkip("\n   usuario: ", account.getUser(), ""));
             builder.append(onNullSkip("\n   contraseña: ", account.getPassword(), ""));
             builder.append(onNullSkip("\n   tags: ", tagBuilder.toString(), ""));
 
         } else {
             builder.append(account.getName() + ": ");
             builder.append(onNullSkip("", account.getEmail(), " | "));
-            builder.append(onNullSkip("", account.getUsername(), " | "));
+            builder.append(onNullSkip("", account.getUser(), " | "));
             builder.append(onNullSkip("", account.getPassword(), ""));
             builder.append(onNullSkip(" | ", tagBuilder.toString(), ""));
         }
