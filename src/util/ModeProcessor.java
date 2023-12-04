@@ -139,7 +139,12 @@ public class ModeProcessor {
             accountHandler.updateAccount(editInteractive(acc));
 
 
-        String name = Flag.getFlagValue("-n", NAME_FLAG);
+        StringBuilder nameBuilder = new StringBuilder();
+        String[] nameValues = Flag.getFlagValues("-n", NAME_FLAG);
+        for (String s : nameValues)
+            nameBuilder.append(s + " ");
+
+        String name = nameBuilder.toString().trim();
         if(name != null)
             acc.setName(name);
 
@@ -217,7 +222,12 @@ public class ModeProcessor {
     }
 
     private String addManualMode(){
-        String name = Flag.getFlagValue("-n", NAME_FLAG);
+        StringBuilder nameBuilder = new StringBuilder();
+        String[] nameValues = Flag.getFlagValues("-n", NAME_FLAG);
+        for (String s : nameValues)
+            nameBuilder.append(s + " ");
+
+        String name = nameBuilder.toString().trim();
         String email = Flag.getFlagValue("-e", EMAIL_FLAG);
         String password = Flag.getFlagValue("-p", PASSWORD_FLAG);
         String user = Flag.getFlagValue("-u", USER_FLAG);
