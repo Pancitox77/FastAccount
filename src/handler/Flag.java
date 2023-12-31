@@ -18,6 +18,8 @@ public class Flag {
         while(!flags[i].startsWith("-")){
             values.add(flags[i]);
             i++;
+
+            if(i >= flags.length) break;
         }
 
         return values.toArray(new String[values.size()]);
