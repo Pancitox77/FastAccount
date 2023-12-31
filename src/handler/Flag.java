@@ -1,11 +1,26 @@
 package handler;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 
 public class Flag {
     private static String[] flags;
 
     private Flag(){
+    }
+
+    public static String[] getValuesNotFlagged(){
+        // Obtener los valores, hasta que se encuentra una bandera (-)
+        
+        List<String> values = new ArrayList<>(1);
+        int i=0;
+        while(!flags[i].startsWith("-")){
+            values.add(flags[i]);
+            i++;
+        }
+
+        return values.toArray(new String[values.size()]);
     }
     
     public static boolean hasFlag(String shortFlag, String longFlag){

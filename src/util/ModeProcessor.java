@@ -35,6 +35,8 @@ public class ModeProcessor {
 
     public String processAddMode(){
         String[] newArgs = Flag.fromNextArg(args);
+
+
         if(newArgs.length == 0) return ARGS_NEEDED_MSJ;
 
         // A) Pase rápido de argumentos
@@ -87,7 +89,7 @@ public class ModeProcessor {
 
     public void processSearchMode(){
         String[] newArgs = Flag.fromNextArg(args);            
-        if(newArgs.length == 0) print(ARGS_NEEDED_MSJ);
+        if(newArgs.length == 0) System.out.println(ARGS_NEEDED_MSJ);
         
         if(!newArgs[0].startsWith("-"))
             searchByNameMode(newArgs[0]);
@@ -111,61 +113,63 @@ public class ModeProcessor {
     public void processEditMode(){
         String[] newArgs = Flag.fromNextArg(args);
         if(newArgs.length == 0){
-            print(ARGS_NEEDED_MSJ);
+            System.out.println(ARGS_NEEDED_MSJ);
             return;
         }
 
         boolean strict = Flag.hasFlag("-s", "--strict");
         boolean caseSensitive = Flag.hasFlag("-ins", "--case-insensitive");
 
+        // Buscar las cuentas que coincidan
         List<Account> results = accountHandler.searchAccountsByName(newArgs[0], strict, caseSensitive);
         if(results.isEmpty()){
-            print("No hay resultados para editar");
+            System.out.println("No hay resultados para editar");
             return;
         }
 
-        Account acc = results.get(0);
+        // Mostrar resultados
+        System.out.println("Resultados:");
+        for(int i=0; i<results.size(); i++){
+            Account acc = results.get(i);
+            System.out.println(i + ". " + acc.getName());
+        }
+        
+        // Seleccionar cuenta a editar
+        System.out.println("\nIngrese el N° de la cuenta a editar (-1 para cancelar):");
+        Scanner scan2 = new Scanner(System.in);
+        int index = scan2.nextInt();
+        if(index == -1 || index >= results.size()) { scan2.close(); return; }
+
+        Account acc = results.get(index);
         String oldName = acc.getName();
 
-        print("\n" + Formatter.format(acc, true) + "\n");
-        
-        // Confirmar que se quiere editar la cuenta, a menos que se use --force
-        if(!Flag.hasFlag("-f", FORCE_FLAG) && !confirmEdition(oldName)) {
-            print("Cancelando operación.");
+        System.out.println("\n" + Formatter.format(acc, true) + "\n");
+
+        // Modo interactivo
+        if (Flag.hasFlag("-i", "--interactive")){
+            accountHandler.updateAccount(oldName, interactiveEdit(acc));
+            scan2.close();
             return;
         }
+        scan2.close();
 
-        if (Flag.hasFlag("-i", "--interactive"))
-            accountHandler.updateAccount(editInteractive(acc));
-
-
+        // Modo manual
         StringBuilder nameBuilder = new StringBuilder();
         String[] nameValues = Flag.getFlagValues("-n", NAME_FLAG);
-        for (String s : nameValues)
-            nameBuilder.append(s + " ");
+        if(nameValues.length > 0)
+            for (String s : nameValues)
+                nameBuilder.append(s + " ");
+        else 
+            nameBuilder.append(acc.getName());
 
-        String name = nameBuilder.toString().trim();
-        if(name != null)
-            acc.setName(name);
-
-        String password = Flag.getFlagValue("-p", PASSWORD_FLAG);
-        if(password != null)
-            acc.setPassword(password);
-
-        String email = Flag.getFlagValue("-e", EMAIL_FLAG);
-        if(email != null)
-            acc.setEmail(email);
-        
-        String user = Flag.getFlagValue("-u", USER_FLAG);
-        if(user != null)
-            acc.setUser(user);
-        
-        String[] tagList = Flag.getFlagValues("-t", TAGS_FLAG);
-        if(tagList.length != 0)
-            acc.setTags(Arrays.asList(tagList));
+        acc.setName(getDefaultNullOrNew(nameBuilder.toString().trim(), acc.getName()));
+        acc.setPassword(getDefaultNullOrNew(Flag.getFlagValue("-p", PASSWORD_FLAG), acc.getPassword()));
+        acc.setEmail(getDefaultNullOrNew(Flag.getFlagValue("-e", EMAIL_FLAG), acc.getEmail()));
+        acc.setUser(getDefaultNullOrNew(Flag.getFlagValue("-u", USER_FLAG), acc.getUser()));
+        acc.setTags(getDefaultNullOrNewArray(Flag.getFlagValues("-t", TAGS_FLAG), acc.getTags()));
 
         accountHandler.updateAccount(acc);
-        print(acc.getName() + " actualizado correctamente.");
+        System.out.println(acc.getName() + " actualizado correctamente.");
     }
 
     @SuppressWarnings("unchecked")
@@ -178,7 +182,7 @@ public class ModeProcessor {
         boolean reverse = Flag.hasFlag("--reverse");
         boolean numerate = Flag.hasFlag("-n", "--numerate");
 
-        print(accountHandler.listAllAccounts(offset, limit, reverse, numerate));
+        System.out.println(accountHandler.listAllAccounts(offset, limit, reverse, numerate));
 
         if(!Flag.hasFlag("--export-json")) return;
 
@@ -194,7 +198,7 @@ public class ModeProcessor {
             array.add(accountObject);
         }
         accountHandler.getFileHandler().exportJson(array);
-        print("Cuentas exportadas a: bin/cuentas.json");
+        System.out.println("Cuentas exportadas a: bin/cuentas.json");
     }
 
 
@@ -223,7 +227,7 @@ public class ModeProcessor {
 
     private String addManualMode(){
         StringBuilder nameBuilder = new StringBuilder();
-        String[] nameValues = Flag.getFlagValues("-n", NAME_FLAG);
+        String[] nameValues = Flag.getValuesNotFlagged();
         for (String s : nameValues)
             nameBuilder.append(s + " ");
 
@@ -253,7 +257,7 @@ public class ModeProcessor {
 
 
     private boolean confirmRemoval(){
-        print("¿Estás seguro que quieres eliminar la/s cuenta/s? [s/n]");
+        System.out.println("¿Estás seguro que quieres eliminar la/s cuenta/s? [s/n]");
         Scanner scanner = new Scanner(System.in);
         String answer = scanner.nextLine().toLowerCase();
         scanner.close();
@@ -270,34 +274,34 @@ public class ModeProcessor {
         boolean caseSensitive = Flag.hasFlag("-ins", "--case-insensitive");
 
         List<Account> foundAccounts = accountHandler.searchAccountsByName(name, strict, caseSensitive);
-        if(foundAccounts.isEmpty()) print("Cuenta no encontrada");
+        if(foundAccounts.isEmpty()) System.out.println("Cuenta no encontrada");
 
         else {
             printResults(foundAccounts.size());
             for (int i=1; i<=foundAccounts.size(); i++){
                 Account account = foundAccounts.get(i-1);
-                print(String.format("%d. %s%n", i, Formatter.format(account, descriptive)));
+                System.out.println(String.format("%d. %s%n", i, Formatter.format(account, descriptive)));
             }
         }
     }
 
     private void searchByEmailMode(String email){
         List<Account> foundAccounts = accountHandler.searchAccountsByEmail(email);
-        if(foundAccounts.isEmpty()) print("Correo no encontrado.");
+        if(foundAccounts.isEmpty()) System.out.println("Correo no encontrado.");
         else {
             printResults(foundAccounts.size());
             for (int i=1; i<=foundAccounts.size(); i++)
-                print(Formatter.format(foundAccounts.get(i-1), descriptive));
+                System.out.println(Formatter.format(foundAccounts.get(i-1), descriptive));
         }
     }
 
     private void searchByUserMode(String user){
         List<Account> foundAccounts = accountHandler.searchAccountsByUser(user);
-        if(foundAccounts.isEmpty()) print("Usuario no encontrado.");
+        if(foundAccounts.isEmpty()) System.out.println("Usuario no encontrado.");
         else {
             printResults(foundAccounts.size());
             for (int i=1; i<=foundAccounts.size(); i++)
-                print(Formatter.format(foundAccounts.get(i-1), descriptive));
+                System.out.println(Formatter.format(foundAccounts.get(i-1), descriptive));
         }
     }
 
@@ -306,31 +310,22 @@ public class ModeProcessor {
         for(String tag: tags)
             foundAccounts.addAll(accountHandler.searchAccountsByTag(tag));
 
-        if(foundAccounts.isEmpty()) print("Etiqueta(s) no encontrada(s).");
+        if(foundAccounts.isEmpty()) System.out.println("Etiqueta(s) no encontrada(s).");
         else {
-            print("Se ha encontrado " + foundAccounts.size() + " cuenta(s):\n");
+            System.out.println("Se ha encontrado " + foundAccounts.size() + " cuenta(s):\n");
             for (int i=1; i<=foundAccounts.size(); i++)
-                print(Formatter.format(foundAccounts.get(i-1), descriptive));
+                System.out.println(Formatter.format(foundAccounts.get(i-1), descriptive));
         }
     }
 
 
     /* Específicos: Editar */
 
-    private boolean confirmEdition(String accountName){
-        System.out.print("\n¿Estás seguro de querer editar la cuenta '" + accountName + "'?" +
-            "\nSi pulsa 's' o Enter, se procederá con la edición. Si no desea continuar, pulse " +
-            "cualquier otra tecla y se cancelará la operación.\n> ");
-        Scanner scanner = new Scanner(System.in);
-        String response = scanner.nextLine().toLowerCase();
-        scanner.close();
-        return response.equals("s") || response.trim().length() == 0; // Se acepta s, S, "", ""
-    }
 
-    private Account editInteractive(Account account){
+    private Account interactiveEdit(Account account){
         Scanner scan = new Scanner(System.in);
 
-        print("Escriba el nuevo valor, presione Enter para dejarlo como está o '-' para valor nulo.");
+        System.out.println("Escriba el nuevo valor, presione Enter para dejarlo como está o '-' para valor nulo.");
 
         String name = askEdit("Nombre", account.getName(), scan);
         String email = askEdit("Email", account.getEmail(), scan);
@@ -354,16 +349,18 @@ public class ModeProcessor {
         editedAccount.setPassword(getDefaultNullOrNew(password, account.getPassword()));
         editedAccount.setTags(getDefaultNullOrNewArray(tags, account.getTags()));
 
+        System.out.println(Formatter.format(editedAccount, true));
+
         return editedAccount;
     }
 
     private String askEdit(String paramName, String oldValue, Scanner scan){
-        print(paramName + " '" + oldValue + "' ->");
+        System.out.println(paramName + " '" + oldValue + "' ->");
         return scan.nextLine();
     }
 
     private String getDefaultNullOrNew(String value, String defaultValue){
-        if(value.isBlank()) return defaultValue;
+        if(value == null || value.isBlank()) return defaultValue;
         if(value.equals("-")) return null;
         return value;
     }
@@ -376,13 +373,9 @@ public class ModeProcessor {
     
 
     /* Util */
-    
 
-    private void print(String msj){
-        System.out.println(msj);
-    }
 
     private void printResults(int results){
-        print("Se ha encontrado " + results + " cuenta(s):\n");
+        System.out.println("Se ha encontrado " + results + " cuenta(s):\n");
     }
 }

@@ -3,7 +3,6 @@
         "modo": "add",
         "opciones": [
             [ "auto <nombre> <email> <contraseña>", "Creación rápida" ],
-            [ "-n, --name <nombre>", "Nombre de la cuenta" ],
             [ "-e, --email <email>", "Email asociado" ],
             [ "-p, --password <contraseña>", "Contraseña" ],
             [ "-u, --user <usuario>", "Usuario (Google, Microsoft, etc)" ],
