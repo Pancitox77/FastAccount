@@ -1,6 +1,6 @@
 package main;
 
-import handler.CLI;
+import cli.CLI;
 
 public class App {
     public static void main(String[] args) {

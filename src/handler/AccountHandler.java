@@ -65,6 +65,11 @@ public class AccountHandler {
         fileHandler.save(accounts);
     }
 
+    public void removeAccount(Account acc){
+        accounts.remove(acc);
+        fileHandler.save(accounts);
+    }
+
     public void removeAccountByName(String name) {
         List<Account> toRemove = accounts.stream()
                 .filter(a -> a.getName().equalsIgnoreCase(name))
@@ -215,7 +220,7 @@ public class AccountHandler {
 
     private void appendAccount(int i, StringBuilder builder, Account lastAccount, boolean numerate){
         Account account = this.accounts.get(i);
-        if(numerate) builder.append(i + 1 + ". ");
+        if(numerate) builder.append((i + 1) + ". ");
         builder.append(Formatter.format(account, descriptiveMode));
         if (account != lastAccount)
             builder.append("\n");

@@ -15,8 +15,7 @@
             [ "<nombre>", "Eliminar un elemento específico" ],
             [ "-a, --all", "Borrar todos los elementos" ],
             [ "-e, --email <email>", "Borrar todas las cuentas con este email" ],
-            [ "-t, --tags <etiquetas...>", "Borrar todas las cuentas con estas etiquetas" ],
-            [ "-f, --force", "Forzar eliminación sin confirmación previa" ]
+            [ "-t, --tags <etiquetas...>", "Borrar todas las cuentas con estas etiquetas" ]
         ]
     },
     {
@@ -39,7 +38,6 @@
             [ "<cuenta> -p, --password <contraseña>", "Nueva contraseña para la cuenta" ],
             [ "<cuenta> -u, --user <usuario>", "Nuevo usuario para la cuenta" ],
             [ "<cuenta> -t, --tags <etiquetas...>", "Añadir o eliminar etiquetas a la cuenta" ],
-            [ "<cuenta> [opciones] -f, --force", "Forzar edición sin confirmación previa"],
             [ "<nombre> [opciones] -s, --strict", "El nombre debe ser igual (no es case-sensitive)"],
             [ "<nombre> [opciones] -ins, --case-insensitive", "No distingue mayúsculas y minúsculas"]
         ]

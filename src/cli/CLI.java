@@ -1,7 +1,6 @@
-package handler;
+package cli;
 
-import util.Help;
-import util.ModeProcessor;
+import handler.AccountHandler;
 
 public class CLI {
     private AccountHandler accountHandler;

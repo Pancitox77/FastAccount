@@ -1,4 +1,4 @@
-package util;
+package cli;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,8 +10,8 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import handler.AccountHandler;
-import handler.CLI;
-import handler.Flag;
+import util.Account;
+import util.Formatter;
 
 public class ModeProcessor {
     private static final String NAME_FLAG = "--name";
@@ -19,7 +19,6 @@ public class ModeProcessor {
     private static final String USER_FLAG = "--user";
     private static final String TAGS_FLAG = "--tags";
     private static final String EMAIL_FLAG = "--email";
-    private static final String FORCE_FLAG = "--force";
 
     private String[] args;
     private AccountHandler accountHandler;
@@ -54,12 +53,32 @@ public class ModeProcessor {
         String[] newArgs = Flag.fromNextArg(args);
         if(newArgs.length == 0) return ARGS_NEEDED_MSJ;
 
-        if(!Flag.hasFlag("-f",FORCE_FLAG) && (!confirmRemoval())) return "Cancelando eliminación.";
-
         if(!newArgs[0].startsWith("-")){
             // Nombre de una cuenta
-            accountHandler.removeAccountByName(newArgs[0]);
-            return newArgs[0] + " eliminado";
+
+            // Buscar las cuentas que coincidan
+            List<Account> results = accountHandler.searchAccountsByName(newArgs[0], false, false);
+            if(results.isEmpty()){
+                return "No hay resultados para editar";
+            }
+
+            // Mostrar resultados
+            System.out.println("Resultados:");
+            for(int i=0; i<results.size(); i++){
+                Account acc = results.get(i);
+                System.out.println(i + ". " + acc.getName());
+            }
+        
+            // Seleccionar cuenta a editar
+            System.out.println("\nIngrese el N° de la cuenta a editar (-1 para cancelar):");
+            Scanner scan2 = new Scanner(System.in);
+            int index = scan2.nextInt();
+            scan2.close();
+            if(index == -1 || index >= results.size()) { scan2.close(); return "Cancelando.."; }
+
+            Account acc = results.get(index);
+            accountHandler.removeAccount(acc);
+            return acc.getName() + " eliminado";
         }
 
         if(Flag.hasFlag("-a", "--all")){
@@ -250,19 +269,6 @@ public class ModeProcessor {
 
         accountHandler.addAccount(account);
         return "La cuenta " + name + " ha sido agregada.";
-    }
-
-
-    /* Específicos: Eliminar */
-
-
-    private boolean confirmRemoval(){
-        System.out.println("¿Estás seguro que quieres eliminar la/s cuenta/s? [s/n]");
-        Scanner scanner = new Scanner(System.in);
-        String answer = scanner.nextLine().toLowerCase();
-        scanner.close();
-
-        return (answer.matches("s|si"));
     }
 
 
