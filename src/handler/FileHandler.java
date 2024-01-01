@@ -78,16 +78,15 @@ public class FileHandler {
 
     public void exportJson(JSONArray array){
         try {
-            File file = new File(getClass().getResource("/").toURI().getPath(), "cuentas.json");
+            File file = new File(System.getProperty("user.dir"), "cuentas.json");
             FileWriter writer = new FileWriter(file);
 
-            System.out.println(file.getAbsolutePath());
             boolean created = file.createNewFile();
-            System.out.println((created ? "Archivo json creado" : ""));
+            System.out.println((created ? "Archivo json creado.." : "Sobreescribiendo json.."));
 
             writer.write(array.toJSONString());
             writer.close();
-        } catch (URISyntaxException|IOException e) { e.printStackTrace(); }
+        } catch (IOException e) { e.printStackTrace(); }
 
     }
 

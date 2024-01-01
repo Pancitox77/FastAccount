@@ -208,16 +208,20 @@ public class ModeProcessor {
         JSONArray array = new JSONArray();
         List<Account> accounts = accountHandler.getAccounts();
         for (Account acc : accounts) {
+            JSONArray tags = new JSONArray();
+            tags.addAll(acc.getTags());
+
             JSONObject accountObject = new JSONObject();
             accountObject.put("nombre", acc.getName());
             accountObject.put("contraseña", acc.getPassword());
             accountObject.put("correo electrónico", acc.getEmail());
             accountObject.put("usuario", acc.getUser());
-            accountObject.put("etiquetas", Arrays.toString(acc.getTags().toArray()));
+            accountObject.put("etiquetas", tags);
+
             array.add(accountObject);
         }
         accountHandler.getFileHandler().exportJson(array);
-        System.out.println("Cuentas exportadas a: bin/cuentas.json");
+        System.out.println("Cuentas exportadas a: cuentas.json");
     }
 
 
